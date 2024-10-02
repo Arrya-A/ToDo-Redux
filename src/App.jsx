@@ -1,6 +1,29 @@
+import { useState } from 'react'
 import './App.css'
+import { useDispatch, useSelector } from 'react-redux'
+import { addTodo, removeTodo, toggleTodo } from './redux/todoSlice'
 
 function App() {
+
+  const [inputValue, setInputValue] = useState('')
+  const todos = useSelector(state => state.todoReducer.todos)
+  const dispatch = useDispatch()
+
+  const handleAddTodo = () => {
+    if (inputValue.trim()) {
+      dispatch(addTodo(inputValue));
+      setInputValue('');
+    }
+  }
+
+  const handleDeleteTodo = (id) => {
+    dispatch(removeTodo(id));
+  }
+
+  const handleToggleTodo = (id) => {
+    dispatch(toggleTodo(id));
+  };
+
 
   return (
     <>
@@ -14,8 +37,8 @@ function App() {
                 {/* input-box */}
                 <form>
                   <div className="d-flex">
-                    <input type="text" placeholder="Enter the Activity" className="form-control" />
-                    <button type="button" className="btn btn-primary ms-2"><i className="fa-solid fa-plus fa-lg"></i></button>
+                    <input onChange={(e) => setInputValue(e.target.value)} type="text" value={inputValue} placeholder="Enter the Activity" className="form-control" />
+                    <button onClick={handleAddTodo} type="button" className="btn btn-primary ms-2"><i className="fa-solid fa-plus fa-lg"></i></button>
                   </div>
                 </form>
               </div>
@@ -23,36 +46,42 @@ function App() {
 
               {/* task card */}
               <div className="bg-light p-3 rounded shadow mt-4 border">
-                <div className='d-flex align-items-center'>
-                  <h6 className='font-semibold text-xl'>1.</h6>
-                  <h6 className='font-semibold text-xl ms-3'>walk</h6>
+                {todos.length === 0 ?
+                  (
+                    <h6 className="text-center text-muted">No tasks for you now.</h6>
+                  )
+                  :
+                  (
+                    todos.map((todo, id) => (
+                      <div key={id} className='d-flex align-items-center'>
+                        <h6>{id + 1}.</h6>
+                        <h6 className='ms-3'>{todo.text}</h6>
 
 
-                  {/* button for incomplete task */}
-                  <button className='btn ms-auto fs-4'><i className="fa-regular fa-circle-check" style={{ color: 'green' }}></i></button>
+                        {/* Toggle button based on completion state */}
+                        <button
+                          className='btn ms-auto fs-4'
+                          onClick={() => handleToggleTodo(id)}>
+                          {todo.completed ?
+                            (
+                              <i className="fa-solid fa-circle-check" style={{ color: 'green' }}></i>
+                            )
+                            :
+                            (
+                              <i className="fa-regular fa-circle-check" style={{ color: 'green' }}></i>
+                            )
+                          }
+                        </button>
 
-                  {/* button for complete task */}
-                  <button className='btn  ms-auto fs-4'><i className="fa-solid fa-circle-check" style={{ color: 'green' }}></i></button>
-
-                  <button className='btn ms-1 fs-4'><i className="fa-solid fa-square-xmark" style={{ color: 'red' }}></i></button>
-                </div>
+                        {/* button to delete todo */}
+                        <button onClick={() => handleDeleteTodo(id)} className='btn ms-1 fs-4'><i className="fa-solid fa-square-xmark" style={{ color: 'red' }}></i></button>
+                      </div>
+                    )))}
               </div>
-
-
-
-
-
             </div>
           </div>
         </div >
       </div>
-
-
-
-
-
-
-
     </>
   )
 }
