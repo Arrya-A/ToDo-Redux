@@ -6,7 +6,14 @@ import { addTodo, removeTodo, toggleTodo } from './redux/todoSlice'
 function App() {
 
   const [inputValue, setInputValue] = useState('')
-  const todos = useSelector(state => state.todoReducer.todos)
+
+  //This line retrieves the entire todoReducer slice and then destructures todos from it.
+  const { todos } = useSelector(state => state.todoReducer)
+
+  // This line directly accesses the todos array from the todoReducer slice without the need for destructuring.
+  // const todos = useSelector(state => state.todoReducer.todos)
+
+
   const dispatch = useDispatch()
 
   const handleAddTodo = () => {
